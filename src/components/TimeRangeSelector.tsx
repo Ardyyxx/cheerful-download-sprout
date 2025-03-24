@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 
 interface TimeRangeSelectorProps {
   duration: number; // in seconds
@@ -38,100 +40,75 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
     setEndTime(duration);
   }, [duration]);
 
-  const handleStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newStart = parseInt(e.target.value);
+  const handleStartChange = (value: number[]) => {
+    const newStart = value[0];
     setStartTime(newStart);
     onChange(newStart, endTime);
   };
 
-  const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEnd = parseInt(e.target.value);
+  const handleEndChange = (value: number[]) => {
+    const newEnd = value[0];
     setEndTime(newEnd);
     onChange(startTime, newEnd);
   };
 
   return (
-    <div className={cn("space-y-3 animate-slide-up", disabled ? "opacity-60 pointer-events-none" : "")}>
+    <div className={cn("space-y-4 animate-slide-up", disabled ? "opacity-60 pointer-events-none" : "")}>
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 text-gray-700">
           <Clock size={18} className="text-gray-600" />
-          <h3 className="font-medium text-sm text-gray-700">Time range</h3>
+          <h3 className="font-medium text-sm">Time range</h3>
         </div>
         
-        <label className="inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only"
+        <div className="flex items-center gap-2">
+          <Switch
             checked={useTimeRange}
-            onChange={() => onUseTimeRangeChange(!useTimeRange)}
+            onCheckedChange={onUseTimeRangeChange}
             disabled={disabled}
+            className={cn(
+              useTimeRange ? "bg-brand-500" : "bg-gray-200",
+            )}
           />
-          <div className={cn(
-            "relative w-10 h-5 transition-colors duration-200 ease-in-out rounded-full",
-            useTimeRange ? "bg-brand-500" : "bg-gray-200",
-          )}>
-            <div className={cn(
-              "absolute w-3.5 h-3.5 transition-transform duration-200 ease-in-out bg-white rounded-full left-0.75 top-0.75",
-              useTimeRange && "transform translate-x-5"
-            )}></div>
-          </div>
-          <span className="ml-2 text-sm text-gray-600">
+          <span className="text-sm text-gray-600">
             {useTimeRange ? "On" : "Off"}
           </span>
-        </label>
+        </div>
       </div>
       
       {useTimeRange && (
-        <div className="pt-1 space-y-4">
-          <div className="space-y-2">
+        <div className="pt-1 space-y-5 bg-gray-50 p-4 rounded-lg">
+          <div className="space-y-6">
             <div className="flex justify-between text-xs text-gray-500 px-1">
               <span>Start: {formatTime(startTime)}</span>
               <span>End: {formatTime(endTime)}</span>
             </div>
             
-            <div className="relative h-7">
-              <input
-                type="range"
-                min={0}
-                max={duration}
-                value={startTime}
-                onChange={handleStartChange}
-                className="absolute w-full top-1/2 transform -translate-y-1/2"
-                disabled={disabled || !useTimeRange}
-              />
-              <input
-                type="range"
-                min={0}
-                max={duration}
-                value={endTime}
-                onChange={handleEndChange}
-                className="absolute w-full top-1/2 transform -translate-y-1/2"
-                disabled={disabled || !useTimeRange}
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-xs text-gray-500">Start time</label>
-              <input
-                type="text"
-                value={formatTime(startTime)}
-                className="w-full py-1.5 px-3 border border-gray-200 rounded-lg text-sm"
-                disabled={disabled || !useTimeRange}
-                readOnly
-              />
-            </div>
-            
-            <div className="space-y-1">
-              <label className="text-xs text-gray-500">End time</label>
-              <input
-                type="text"
-                value={formatTime(endTime)}
-                className="w-full py-1.5 px-3 border border-gray-200 rounded-lg text-sm"
-                disabled={disabled || !useTimeRange}
-                readOnly
-              />
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="text-xs font-medium text-gray-500">Start time: {formatTime(startTime)}</label>
+                <Slider
+                  value={[startTime]}
+                  min={0}
+                  max={endTime}
+                  step={1}
+                  onValueChange={handleStartChange}
+                  disabled={disabled || !useTimeRange}
+                  className="mt-1"
+                />
+              </div>
+              
+              <div className="space-y-4">
+                <label className="text-xs font-medium text-gray-500">End time: {formatTime(endTime)}</label>
+                <Slider
+                  value={[endTime]}
+                  min={startTime}
+                  max={duration}
+                  step={1}
+                  onValueChange={handleEndChange}
+                  disabled={disabled || !useTimeRange}
+                  className="mt-1"
+                />
+              </div>
             </div>
           </div>
         </div>

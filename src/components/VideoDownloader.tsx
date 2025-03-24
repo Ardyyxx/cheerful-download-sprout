@@ -4,12 +4,14 @@ import { ExternalLink, Image } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 
 import URLInput from "./URLInput";
 import QualitySelector, { Quality } from "./QualitySelector";
 import TimeRangeSelector from "./TimeRangeSelector";
 import DownloadButton from "./DownloadButton";
 import DownloadStatus, { StatusType } from "./DownloadStatus";
+import KeywordAnalyzer from "./KeywordAnalyzer";
 
 const VideoDownloader: React.FC = () => {
   // State for video URL and metadata
@@ -175,6 +177,13 @@ const VideoDownloader: React.FC = () => {
             
             <Separator className="my-6" />
             
+            {/* Keyword analysis */}
+            {url && videoTitle && (
+              <KeywordAnalyzer title={videoTitle} />
+            )}
+            
+            <Separator className="my-6" />
+            
             {/* Quality options */}
             <QualitySelector
               qualities={allQualities}
@@ -197,37 +206,29 @@ const VideoDownloader: React.FC = () => {
             
             {/* Thumbnail download option */}
             <div className={cn("animate-slide-up", isProcessing ? "opacity-60 pointer-events-none" : "")}>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <Image size={18} className="text-gray-600" />
                   <h3 className="font-medium text-sm text-gray-700">Download thumbnail</h3>
                 </div>
                 
-                <label className="inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only"
+                <div className="flex items-center gap-2">
+                  <Switch
                     checked={downloadThumbnail}
-                    onChange={() => setDownloadThumbnail(!downloadThumbnail)}
+                    onCheckedChange={setDownloadThumbnail}
                     disabled={isProcessing}
+                    className={cn(
+                      downloadThumbnail ? "bg-brand-500" : "bg-gray-200",
+                    )}
                   />
-                  <div className={cn(
-                    "relative w-10 h-5 transition-colors duration-200 ease-in-out rounded-full",
-                    downloadThumbnail ? "bg-brand-500" : "bg-gray-200",
-                  )}>
-                    <div className={cn(
-                      "absolute w-3.5 h-3.5 transition-transform duration-200 ease-in-out bg-white rounded-full left-0.75 top-0.75",
-                      downloadThumbnail && "transform translate-x-5"
-                    )}></div>
-                  </div>
-                  <span className="ml-2 text-sm text-gray-600">
+                  <span className="text-sm text-gray-600">
                     {downloadThumbnail ? "Yes" : "No"}
                   </span>
-                </label>
+                </div>
               </div>
               
               {downloadThumbnail && (
-                <p className="text-xs text-gray-500 mt-1 ml-7">
+                <p className="text-xs text-gray-500 mt-2 ml-7">
                   The video thumbnail will be saved along with your download
                 </p>
               )}
