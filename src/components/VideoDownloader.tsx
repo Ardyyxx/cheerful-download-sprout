@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { ExternalLink, Image } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 import URLInput from "./URLInput";
 import QualitySelector, { Quality } from "./QualitySelector";
